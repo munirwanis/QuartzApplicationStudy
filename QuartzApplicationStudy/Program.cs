@@ -2,6 +2,7 @@
 using Quartz.Impl;
 using QuartzApplicationStudy.Jobs;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace QuartzApplicationStudy {
@@ -16,13 +17,21 @@ namespace QuartzApplicationStudy {
                 #endregion
 
                 #region Creating a Job
-                IJobDetail job = JobBuilder.Create<HelloJob>()
+                IJobDetail helloJob = JobBuilder.Create<HelloJob>()
                     .WithIdentity("job1", "group1")
                     .Build();
                 #endregion
 
+                #region Creating a Job with Data Mapping
+                IJobDetail dumbJob = JobBuilder.Create<DumbJob>()
+                    .WithIdentity("job2", "group1")
+                    .UsingJobData("jobSays", "Hello World!")
+                    .UsingJobData("myFloatValue", 3.14f)
+                    .Build();
+                #endregion
+
                 #region Triggering Job
-                ITrigger trigger = TriggerBuilder.Create()
+                ITrigger helloTrigger = TriggerBuilder.Create()
                     .WithIdentity("job1", "group1")
                     .StartNow()
                     .WithSimpleSchedule(x => x
@@ -30,8 +39,17 @@ namespace QuartzApplicationStudy {
                         .RepeatForever())
                     .Build();
 
+                ITrigger dumbTrigger = TriggerBuilder.Create()
+                    .WithIdentity("job2", "group1")
+                    .StartNow()
+                    .WithSimpleSchedule(x => x
+                        .WithIntervalInSeconds(3)
+                        .RepeatForever())
+                    .Build();
+                
                 // Tell quartz to schedule the job using the trigger
-                scheduler.ScheduleJob(job, trigger);
+                scheduler.ScheduleJob(helloJob, helloTrigger);
+                scheduler.ScheduleJob(dumbJob, dumbTrigger);
                 #endregion
 
                 Thread.Sleep(TimeSpan.FromSeconds(5));
