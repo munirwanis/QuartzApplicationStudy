@@ -23,7 +23,7 @@ namespace QuartzApplicationStudy {
                 #endregion
 
                 #region Creating a Job with Data Mapping
-                IJobDetail dumbJob = JobBuilder.Create<DumbJob>()
+                  IJobDetail dumbJob = JobBuilder.Create<DumbJob>()
                     .WithIdentity("job2", "group1")
                     .UsingJobData("jobSays", "Hello World!")
                     .UsingJobData("myFloatValue", 3.14f)
@@ -52,16 +52,26 @@ namespace QuartzApplicationStudy {
                 scheduler.ScheduleJob(dumbJob, dumbTrigger);
                 #endregion
 
-                Thread.Sleep(TimeSpan.FromSeconds(5));
+                //Thread.Sleep(TimeSpan.FromSeconds(5));
 
                 #region Terminating Scheduler
-                scheduler.Shutdown();
+                Shutdown(scheduler);
                 #endregion
             }
             catch (Exception ex) {
                 Console.WriteLine(ex);
             }
+
             Console.ReadLine();
+        }
+
+        static void Shutdown(IScheduler scheduler) {
+            if (Console.ReadKey().KeyChar == 'f') {
+                scheduler.Shutdown();
+            }
+            else {
+                Shutdown(scheduler);
+            }
         }
     }
 }
